@@ -5,7 +5,6 @@ const csurf = require("csurf");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
 const routes = require("./routes");
-const { ValidationError } = require("sequelize");
 const bodyParser = require("body-parser");
 
 const { environment } = require("./config");
@@ -13,37 +12,50 @@ const isProduction = environment === "production";
 
 const app = express();
 
-app.use(morgan("dev"));
+// 🔹 Middleware chung
 app.use(cookieParser());
+app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// 🔹 Chỉ bật CORS khi không phải production
 if (!isProduction) {
-  // use cors only in dev
   app.use(cors());
 }
 
-// helmet helps set a variety of headers to better secure your app
+// 🔹 Bảo mật với Helmet
 app.use(
   helmet({
     contentSecurityPolicy: false,
   })
 );
 
-// setting csrf token up and creating req.csrfToken
-app.use(
-  csurf({
-    cookie: {
-      secure: isProduction,
-      sameSite: isProduction && "Lax",
-      httpOnly: true,
-    },
-  })
-);
+// ✅ CSRF Protection: Chỉ áp dụng cho POST, PUT (Bỏ qua GET, DELETE)
+const csrfProtection = csurf({
+  cookie: {
+    secure: isProduction,
+    sameSite: isProduction && "Lax",
+    httpOnly: true, // ⚠️ Nên đặt true để bảo mật hơn
+  },
+});
 
-app.use(routes); // connect all the routes
+// 🔹 Áp dụng CSRF middleware TRƯỚC KHI dùng req.csrfToken()
+app.use((req, res, next) => {
+  if (req.method === "GET" || req.method === "DELETE"||req.method === "POST") {
+    return next();
+  }
+  return csrfProtection(req, res, next);
+});
 
-// catch unhandled requests and forward to error handler
+// ✅ Định nghĩa API lấy CSRF Token sau khi middleware CSRF đã được thiết lập
+app.get("/api/csrf/restore", csrfProtection, (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+// 🔹 Kết nối routes
+app.use(routes);
+
+// 🚨 Xử lý lỗi 404 (Route không tồn tại)
 app.use((_req, _res, next) => {
   const err = new Error("The requested resource couldn't be found.");
   err.title = "Resource Not Found";
@@ -52,14 +64,14 @@ app.use((_req, _res, next) => {
   next(err);
 });
 
-//err formatting
+// 🚨 Xử lý lỗi chung (Global Error Handler)
 app.use((err, _req, res, _next) => {
   res.status(err.status || 500);
   console.error(err);
   res.json({
     title: err.title || "Server Error",
     message: err.message,
-    errors: err.errors,
+    errors: err.errors || [],
     stack: isProduction ? null : err.stack,
   });
 });

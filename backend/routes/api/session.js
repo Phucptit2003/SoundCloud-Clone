@@ -42,10 +42,15 @@ router.post(
 );
 
 // log out user
-router.delete("/", (_req, res) => {
+router.delete("/", restoreUser, (req, res) => {
+  if (!req.user) {
+    return res.status(403).json({ error: "Bạn chưa đăng nhập." });
+  }
+
   res.clearCookie("token");
-  return res.json({ message: "success" });
+  return res.json({ message: "Đăng xuất thành công." });
 });
+
 
 // Restore session user
 router.get("/", restoreUser, (req, res) => {
