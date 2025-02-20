@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
 // name of your bucket here
-const soundwavevs = "soundwavevs";
+const soundwavevs = "testingsoundcloud";
 
 const multer = require("multer");
 
@@ -22,7 +22,7 @@ const singlePublicFileUpload = async (file) => {
     Bucket: soundwavevs,
     Key,
     Body: buffer,
-    ACL: "public-read",
+    // ACL: "public-read",
   };
   const result = await s3.upload(uploadParams).promise();
 
