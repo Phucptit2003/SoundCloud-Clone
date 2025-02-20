@@ -26,11 +26,14 @@ function LoginFormModal() {
   const dispatch = useDispatch();
 
   const loginState = useSelector((state) => state.modal.loginShow);
+  
 
   const closeModal = () => dispatch(closeLogin());
+  console.log(loginState+" "+closeModal);
 
   return (
     <>
+    
       <button
         id="signInBtn"
         className="nav-bar-btn"
