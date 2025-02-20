@@ -5,6 +5,7 @@ const songsRouter = require("./songs.js");
 const commentsRouter = require("./comments.js");
 const asyncHandler = require("express-async-handler");
 const yourAlbumsRoutes = require("./youralbums.js");
+const mySongRoutes = require("./mysong.js");
 const {
   setTokenCookie,
   restoreUser,
@@ -21,6 +22,8 @@ router.use("/your-albums", yourAlbumsRoutes);
 router.post("/test", (req, res) => {
   res.json({ requestBody: req.body });
 });
+
+router.use("/mysong", mySongRoutes);
 
 // // setting the user token test
 // router.get(

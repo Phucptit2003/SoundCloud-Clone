@@ -8,7 +8,7 @@ export default function SplashFooter() {
         <div id="splash-footer-list">
           <a
             className="splash-footer-content"
-            href="https://github.com/V3RS/SoundCloud-Clone"
+            href=""
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -16,7 +16,7 @@ export default function SplashFooter() {
           </a>
           <a
             className="splash-footer-content"
-            href="https://www.linkedin.com/in/veerkaran-singh-45b4a9190/"
+            href=""
             target="_blank"
             rel="noopener noreferrer"
           >

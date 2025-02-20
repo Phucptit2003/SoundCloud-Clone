@@ -9,7 +9,7 @@ import SongPage from "./components/SongPage";
 import UploadForm from "./components/UploadForm";
 import MyAlbum from "./components/MyAlbum";
 import { getAllSongs } from "./store/songs";
-
+import MySong from "./components/MySong";
 function App() {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -40,6 +40,9 @@ function App() {
           {/* Nếu user chưa đăng nhập, chuyển hướng về trang login */}
           <Route path="/myalbum/:userId">
             {sessionUser ? <MyAlbum isLoaded={isLoaded} /> : <Redirect to="/dashbroad" />}
+          </Route>
+          <Route path="/mysong/:userId">
+            {sessionUser ? <MySong isLoaded={isLoaded} /> : <Redirect to="/dashbroad" />}
           </Route>
 
           <Route path="/upload">

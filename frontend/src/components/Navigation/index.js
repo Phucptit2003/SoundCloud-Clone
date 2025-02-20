@@ -53,6 +53,9 @@ function Navigation({ isLoaded }) {
             <NavLink id="nav-home" exact to="/myalbum/:userId">
               My Album
             </NavLink>
+            <NavLink id="nav-home" exact to="/mysong/:userId">
+              My Song
+            </NavLink>
             <NavLink id="nav-upload" to="/upload">
               Upload
             </NavLink>

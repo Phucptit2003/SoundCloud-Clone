@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import Navigation from "../Navigation";
 
-export default function MyAlbum({ isLoaded }) {
+export default function MySong({ isLoaded }) {
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,14 +13,14 @@ export default function MyAlbum({ isLoaded }) {
 
   useEffect(() => {
     if (!sessionUser) {
-      alert("Vui lòng đăng nhập để xem album của bạn.");
+      alert("Vui lòng đăng nhập để xem danh sách bài hát của bạn.");
       history.push("/dashboard");
       return;
     }
 
     const userId = sessionUser.id;
 
-    fetch(`/api/your-albums/${userId}`)
+    fetch(`/api/mysong/${userId}`)
       .then((res) => {
         if (!res.ok) throw new Error("Không thể tải danh sách bài hát.");
         return res.json();
@@ -43,7 +43,7 @@ export default function MyAlbum({ isLoaded }) {
 
   const handleDeleteSong = (songId) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa bài hát này?")) {
-      fetch(`/api/your-albums`, {
+      fetch(`/api/mysong`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: sessionUser.id, songId }),
@@ -62,7 +62,7 @@ export default function MyAlbum({ isLoaded }) {
   return (
     <div id="top-dashboard">
       <Navigation isLoaded={isLoaded} />
-      <h1 id="dashboard-title">🎵 My Album 🎶</h1>
+      <h1 id="dashboard-title">🎵 My Songs 🎶</h1>
 
       {loading && <p className="text-center text-gray-400">Đang tải bài hát...</p>}
 
@@ -76,7 +76,7 @@ export default function MyAlbum({ isLoaded }) {
                 key={song.id}
                 className="dashboard-cover-container"
                 onClick={() => {
-                  history.push(`/songs/${song.id}`); // 👉 Chuyển đến chi tiết bài hát
+                  history.push(`/songs/${song.id}`);
                   window.scrollTo(0, 0);
                 }}
               >
@@ -89,21 +89,20 @@ export default function MyAlbum({ isLoaded }) {
                   src={song.audioFile}
                 ></audio>
                 <a className="dashboard-cover-artist">{song.artist}</a>
-
-                {/* Nút Xóa bài hát */}
+                <p className="dashboard-cover-album">Album: {song.album}</p>
                 <button
                   onClick={(event) =>{ 
                     event.stopPropagation();
                     handleDeleteSong(song.id)}}
                   className="delete-song-button"
                 >
-                  ❌ Delete song from my album
+                  ❌ Delete song from my list
                 </button>
               </div>
             ))
           ) : (
             <p className="text-center text-gray-400 col-span-full">
-              Không có bài hát nào trong album.
+              Không có bài hát nào trong danh sách của bạn.
             </p>
           )}
         </div>
