@@ -45,14 +45,12 @@ function Navigation({ isLoaded }) {
                 <i className="fas fa-search"></i>
               </button>
             </div>
-            <a
-              id="nav-linkedin"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <NavLink id="nav-home" exact to="/myalbum/:userId">
               My Album
-            </a>
+            </NavLink>
+            <NavLink id="nav-home" exact to="/mysong/:userId">
+              My Song
+            </NavLink>
             <NavLink id="nav-upload" to="/upload">
               Upload
             </NavLink>

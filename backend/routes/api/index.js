@@ -3,9 +3,9 @@ const sessionRouter = require("./session.js");
 const usersRouter = require("./users.js");
 const songsRouter = require("./songs.js");
 const commentsRouter = require("./comments.js");
-const paymentRouter = require("./payment.js");
 const asyncHandler = require("express-async-handler");
-const {Payment} = require('../../db/models/payment.js')
+const yourAlbumsRoutes = require("./youralbums.js");
+const mySongRoutes = require("./mysong.js");
 const {
   setTokenCookie,
   restoreUser,
@@ -17,13 +17,13 @@ router.use("/session", sessionRouter);
 router.use("/users", usersRouter);
 router.use("/songs", songsRouter);
 router.use("/comments", commentsRouter);
-// router.use("/vnpay", paymentRouter);
 
-
-
+router.use("/your-albums", yourAlbumsRoutes);
 router.post("/test", (req, res) => {
   res.json({ requestBody: req.body });
 });
+
+router.use("/mysong", mySongRoutes);
 
 // // setting the user token test
 // router.get(

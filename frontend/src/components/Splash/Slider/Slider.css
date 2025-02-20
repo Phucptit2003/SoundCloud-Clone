@@ -53,7 +53,7 @@
   /* width: 40%; */
   /* position: relative; */
   /* right: 340px; */
-  display: flex;
+  /* display: flex; */
   /* flex-flow: column nowrap; */
   /* justify-content: center; */
   align-items: center;
@@ -63,10 +63,16 @@
   /* z-index: -10; */
   height: 450px;
   /* min-width: 1240px; */
-  /* width: 100%; */
+   /* width: 100%;  */
   transition: all;
   /* z-index: -5; */
   /* transform: translateX(100%); */
+  object-fit: contain; /* Ảnh sẽ được cắt để khớp với khung */
+  object-position: center; /* Căn giữa ảnh để không bị lệch */
+  display: block;
+
+
+  
 }
 
 #slider1btns {

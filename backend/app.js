@@ -1,39 +1,61 @@
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const csurf = require("csurf");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
 const routes = require("./routes");
-const paymentRouter = require("./routes/api/payment");
-const { Payment } = require("./db/models/payment");
+const bodyParser = require("body-parser");
+
 const { environment } = require("./config");
 const isProduction = environment === "production";
 
 const app = express();
 
-app.use(morgan("dev"));
+// 🔹 Middleware chung
 app.use(cookieParser());
+app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// 🔹 Chỉ bật CORS khi không phải production
 if (!isProduction) {
-  app.use(cors()); // Chỉ dùng CORS trong môi trường dev
-  app.use(express.json()); // Cho phép xử lý JSON trong request body
+  app.use(cors());
 }
 
+// 🔹 Bảo mật với Helmet
 app.use(
   helmet({
     contentSecurityPolicy: false,
   })
 );
 
-// Gắn router của VNPAY trước khi các route khác
-app.use("/vnpay", paymentRouter);
+// ✅ CSRF Protection: Chỉ áp dụng cho POST, PUT (Bỏ qua GET, DELETE)
+const csrfProtection = csurf({
+  cookie: {
+    secure: isProduction,
+    sameSite: isProduction && "Lax",
+    httpOnly: true, // ⚠️ Nên đặt true để bảo mật hơn
+  },
+});
 
-app.use(routes); // Kết nối toàn bộ routes khác
+// 🔹 Áp dụng CSRF middleware TRƯỚC KHI dùng req.csrfToken()
+app.use((req, res, next) => {
+  if (req.method === "GET" || req.method === "DELETE"||req.method === "POST") {
+    return next();
+  }
+  return csrfProtection(req, res, next);
+});
 
-// Middleware xử lý lỗi 404
+// ✅ Định nghĩa API lấy CSRF Token sau khi middleware CSRF đã được thiết lập
+app.get("/api/csrf/restore", csrfProtection, (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+// 🔹 Kết nối routes
+app.use(routes);
+
+// 🚨 Xử lý lỗi 404 (Route không tồn tại)
 app.use((_req, _res, next) => {
   const err = new Error("The requested resource couldn't be found.");
   err.title = "Resource Not Found";
@@ -42,19 +64,17 @@ app.use((_req, _res, next) => {
   next(err);
 });
 
-
-
-
-// Middleware xử lý lỗi tổng quát
+// 🚨 Xử lý lỗi chung (Global Error Handler)
 app.use((err, _req, res, _next) => {
   res.status(err.status || 500);
   console.error(err);
   res.json({
     title: err.title || "Server Error",
     message: err.message,
-    errors: err.errors,
+    errors: err.errors || [],
     stack: isProduction ? null : err.stack,
   });
 });
+
 
 module.exports = app;
