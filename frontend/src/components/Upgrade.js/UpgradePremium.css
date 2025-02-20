@@ -1,0 +1,50 @@
+.upgrade-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f4f4;
+}
+
+.upgrade-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 400px;
+}
+
+.upgrade-title {
+  color: #007bff;
+}
+
+.upgrade-price {
+  color: #28a745;
+}
+
+.upgrade-description {
+  color: #6c757d;
+}
+
+.upgrade-benefits {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+}
+
+.upgrade-benefits li {
+  margin-bottom: 8px;
+}
+
+.upgrade-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
+}
