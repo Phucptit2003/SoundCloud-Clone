@@ -36,14 +36,9 @@ function Navigation({ isLoaded }) {
             <NavLink id="nav-home" exact to="/dashboard">
               Home
             </NavLink>
-            <a
-              id="nav-github"
-              href="https://github.com/Phucptit2003/WebMusic"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Github
-            </a>
+            <NavLink id="nav-home" exact to="/upgrade">
+            Upgrade
+            </NavLink>
             <div className="nav-search-container">
               <input className="nav-search" placeholder="Search"></input>
               <button className="nav-search-btn">
@@ -61,12 +56,10 @@ function Navigation({ isLoaded }) {
             <NavLink id="nav-upload" to="/upload">
               Upload
             </NavLink>
-            {/* <NavLink id="nav-profile" to="/">
+            <NavLink id="nav-profile" to="/">
               {sessionUser?.username}
-            </NavLink> */}
-            <NavLink id="nav-profile" to="/upgrade">
-                Upgrade
             </NavLink>
+        
           </div>
 
           {isLoaded && sessionLinks}
