@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const apiRouter = require("./api");
-
+const apivnpay = require("./api/payment");
 // Initial test route
 // router.get("/hello/world", (req, res) => {
 //   res.cookie("XSRF-TOKEN", req.csrfToken());
@@ -10,6 +10,7 @@ const apiRouter = require("./api");
 // });
 
 router.use("/api", apiRouter);
+router.use("/",apivnpay);
 
 // Add a XSRF-TOKEN cookie in development
 if (process.env.NODE_ENV !== "production") {

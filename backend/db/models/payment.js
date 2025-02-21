@@ -5,12 +5,13 @@ module.exports = (sequelize, DataTypes) => {
   const Payment = sequelize.define(
     "Payment",
     {
-      userId: {
+      userid: {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
           isInt: true,
         },
+        field: "userid", // Sửa lỗi từ `filed` thành `field`
       },
       amount: {
         type: DataTypes.FLOAT,
@@ -27,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
           len: [3, 3], // ISO 4217 currency code (e.g., USD, EUR)
         },
       },
-      paymentMethod: {
+      paymentmethod: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -35,15 +36,31 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM("pending", "completed", "failed"),
         defaultValue: "pending",
       },
-      expiresAt: {
+      expiresat: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: sequelize.literal("NOW() + interval '30 days'"),
+        field: "expiresat",
+      },
+      createdat: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+        field: "createdat",
+      },
+      updatedat: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+        field: "updatedat",
       },
     },
     {
+      timestamps: true, // Bật timestamps nhưng dùng tên cột tùy chỉnh
+      createdAt: "createdat", // Sử dụng tên cột tùy chỉnh thay vì mặc định `createdAt`
+      updatedAt: "updatedat", // Sử dụng tên cột tùy chỉnh thay vì mặc định `updatedAt`
       defaultScope: {
-        attributes: { exclude: ["createdAt", "updatedAt"] },
+        attributes: { exclude: ["createdat", "updatedat"] },
       },
       scopes: {
         detailed: { attributes: {} },
@@ -53,7 +70,7 @@ module.exports = (sequelize, DataTypes) => {
 
   // Định nghĩa mối quan hệ
   Payment.associate = function (models) {
-    Payment.belongsTo(models.User, { foreignKey: "userId" });
+    Payment.belongsTo(models.User, { foreignKey: "userid" });
   };
 
   // Lấy payment theo ID
@@ -69,7 +86,7 @@ module.exports = (sequelize, DataTypes) => {
       currency,
       paymentMethod,
       status: "pending",
-      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 ngày sau
+      expiresat: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 ngày sau
     });
   };
 
@@ -84,17 +101,17 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   // Kiểm tra xem user có premium hay không
-  Payment.isUserPremium = async function (userId) {
+  Payment.isUserPremium = async function (userid) {
     try {
       const latestPayment = await Payment.findOne({
         where: {
-          userId,
+          userid,
           status: "completed",
-          expiresAt: {
+          expiresat: {
             [Op.gt]: new Date(), // Chỉ lấy giao dịch chưa hết hạn
           },
         },
-        order: [["expiresAt", "DESC"]], // Lấy giao dịch mới nhất
+        order: [["expiresat", "DESC"]], // Lấy giao dịch mới nhất
       });
 
       return !!latestPayment; // Trả về true nếu có gói premium hợp lệ, ngược lại false

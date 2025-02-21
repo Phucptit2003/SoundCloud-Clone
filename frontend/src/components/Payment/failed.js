@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 const PaymentFailed = () => {
     const searchParams = new URLSearchParams(useLocation().search);
     const code = searchParams.get("code");
-
+    console.log(code);
     return (
         <div style={{ textAlign: "center", marginTop: "50px" }}>
             <h1 style={{ color: "red" }}>Thanh toán thất bại ❌</h1>

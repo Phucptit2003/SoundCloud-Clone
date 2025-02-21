@@ -16,23 +16,65 @@ export default function UploadForm() {
   const history = useHistory();
 
   const songs = useSelector((state) => state.songsRed.songs);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // console.log("aaaaAAA", audioFile);
-    const song = {
-      title,
-      artist,
-      genre,
-      albumName,
-      albumCover,
-      audioFile,
-    };
-    const newSong = dispatch(postSong(song));
-    // console.log(newSong);
-    // history.push(`/songs/${newSong.id}`);
-    history.push(`/dashboard`);
-  };
+  
+      // 2️⃣ Gửi yêu cầu thêm bài hát vào danh sách của người dùng
+      const sessionUser = useSelector((state) => state.session.user);
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+      
+        if (!audioFile) {
+          alert("Vui lòng chọn file âm thanh!");
+          return;
+        }
+      
+        const song = {
+          title,
+          artist,
+          genre,
+          albumName,
+          albumCover,
+          audioFile,
+        };
+      
+        try {
+          // 1️⃣ Gửi yêu cầu tạo bài hát mới
+          const responseSong = await dispatch(postSong(song));
+          console.log("✅ Kết quả trả về từ postSong:", JSON.stringify(responseSong, null, 2));
+      
+          // 2️⃣ Trích xuất newSong từ responseSong
+          const newSong = responseSong.newSong;
+      
+          // Kiểm tra nếu không có newSong hoặc id của bài hát
+          if (!newSong || !newSong.id) {
+            alert("Lỗi khi tạo bài hát!");
+            return;
+          }
+      
+          // 3️⃣ Gửi yêu cầu thêm bài hát vào danh sách của người dùng
+          const response = await fetch("http://localhost:5433/api/mysong", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: sessionUser.id,
+              songId: newSong.id, // Sử dụng id từ newSong
+            }),
+          });
+      
+          const data = await response.json();
+      
+          // Xử lý kết quả trả về từ API mysong
+          if (data.error) {
+            alert(`❌ Lỗi: ${data.error}`);
+          } else {
+            alert("✅ Bài hát đã được thêm vào danh sách của bạn!");
+            history.push("/dashboard");
+          }
+        } catch (error) {
+          console.error("Lỗi khi upload bài hát:", error);
+          alert("❌ Đã xảy ra lỗi khi thêm bài hát!");
+        }
+      };
+      
 
   return (
     <div className="upload__form__c">

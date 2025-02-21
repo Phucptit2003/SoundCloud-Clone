@@ -10,6 +10,12 @@ import UploadForm from "./components/UploadForm";
 import MyAlbum from "./components/MyAlbum";
 import { getAllSongs } from "./store/songs";
 import MySong from "./components/MySong";
+
+import UpgradePremium from "./components/Upgrade"
+import PaymentForm from "./components/Payment/index.js";
+import PaymentSuccess from "./components/Payment/success.js";
+import PaymentFailed from "./components/Payment/failed.js";
+
 function App() {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -43,6 +49,22 @@ function App() {
           </Route>
           <Route path="/mysong/:userId">
             {sessionUser ? <MySong isLoaded={isLoaded} /> : <Redirect to="/dashbroad" />}
+          </Route>
+          <Route path="/upgrade">
+            <Navigation isLoaded={isLoaded} />
+            <UpgradePremium />
+          </Route>
+          <Route path="/payment">
+            <Navigation isLoaded={isLoaded} />
+            <PaymentForm />
+          </Route>
+          <Route path="/payment-success">
+            <Navigation isLoaded={isLoaded} />
+            <PaymentSuccess />
+          </Route>
+          <Route path="/payment-failed">
+            <Navigation isLoaded={isLoaded} />
+            <PaymentFailed />
           </Route>
 
           <Route path="/upload">

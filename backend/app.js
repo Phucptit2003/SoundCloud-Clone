@@ -52,8 +52,12 @@ app.get("/api/csrf/restore", csrfProtection, (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
 
+
 // 🔹 Kết nối routes
 app.use(routes);
+
+const paymentRoutes = require('./routes/api/payment');
+app.use('/vnpay', paymentRoutes);
 
 // 🚨 Xử lý lỗi 404 (Route không tồn tại)
 app.use((_req, _res, next) => {

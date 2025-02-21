@@ -30,15 +30,20 @@ module.exports = {
         allowNull: false,
         defaultValue: "pending",
       },
-      createdAt: {
+      createdat: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.fn("now"),
       },
-      updatedAt: {
+      updatedat: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.fn("now"),
+      },
+      expiresat: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: sequelize.literal("NOW() + interval '30 days'"),
       },
     });
   },

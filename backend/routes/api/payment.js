@@ -116,17 +116,18 @@ router.get("/vnpay_return", requireAuth, async function (req, res) {
     if (secureHash === signed) {
         const { vnp_TxnRef, vnp_Amount, vnp_CurrCode, vnp_ResponseCode, vnp_TransactionStatus } = vnp_Params;
         const status = vnp_ResponseCode === "00" && vnp_TransactionStatus === "00" ? "completed" : "failed";
-
+        let userId = req.user.id; // 🛑 Lấy userId từ req.user
+            console.log("User ID1:", userId);
         try {
             let userId = req.user.id; // 🛑 Lấy userId từ req.user
             console.log("User ID:", userId);
 
             // Lưu thông tin thanh toán vào database
             const payment = await Payment.create({
-                userId: userId,
+                userid: userId,
                 amount: parseFloat(vnp_Amount) / 100, // Chia 100 để đúng đơn vị tiền tệ
                 currency: "VND",
-                paymentMethod: "VNPAY",
+                paymentmethod: "VNPAY",
                 status: status,
             });
 
@@ -139,7 +140,7 @@ router.get("/vnpay_return", requireAuth, async function (req, res) {
                 res.redirect(`http://localhost:3000/payment-failed?code=99`);
             }
         } catch (error) {
-            console.error("❌ Error saving payment:", error);
+            console.log("❌ Error saving payment:", error);
             res.redirect(`http://localhost:3000/payment-failed?code=500`);
         }
     } else {
